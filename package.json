@@ -1,0 +1,22 @@
+{
+  "name": "gestigris-importation",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/leseulsteve/gestigris-importation.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/leseulsteve/gestigris-importation/issues"
+  },
+  "homepage": "https://github.com/leseulsteve/gestigris-importation#readme"
+}
