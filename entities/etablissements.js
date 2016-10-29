@@ -35,7 +35,7 @@ function getVille(current, tout) {
       ville = getEntityNamed('Québec', tout);
     break;
     default:
-      console.log('VILLE INCONNUE: IL MANQUE PEUT-ÊTRE UNE EXCEPTION DANS getVille' );
+      console.log('VILLE INCONNUE:\n IL MANQUE PEUT-ÊTRE UNE EXCEPTION DANS /entities/etablissements.js' );
     }
   }
 

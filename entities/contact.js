@@ -7,7 +7,7 @@ var dataReader = require('../lib/data-reader'),
 
 function getEtabs(currents, toutOld, toutNew) {
   var etabs = _.map(currents, (function (current) {
-    // Cherche l'établissements courant par nom dans toutNew
+    // Cherche les établissements courant par nom dans toutNew
     var results = _.filter(toutNew, ['name', current.name]);
     if (results.length === 1) {
       return results[0];
@@ -16,7 +16,7 @@ function getEtabs(currents, toutOld, toutNew) {
       return results[0];
     } else {
       console.log("L'établissement :" + current + " manque à l'appel dans la nouvelle base de données !");
-      return null;
+      return [];
     }
   }));
   return etabs;
@@ -47,6 +47,7 @@ module.exports = {
             if (err) {
               return cb(err);
             }
+
             contacts = _.map(contacts, function (contact) {
               // Récupère de la nouvelle base de donnée les établissements
               // associés au contact
@@ -60,7 +61,7 @@ module.exports = {
                 poste: poste,
                 email: contact.courriel,
                 etablissements: etabsContact
-              }
+              };
             });
 
             exporter.send(apiRoute, contacts, cb);
