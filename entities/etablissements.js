@@ -8,7 +8,6 @@ var dataReader = require('../lib/data-reader'),
 
 function getVille(current, tout) {
   var ville = getEntityNamed(current, tout);
-
   if (!ville) {
     switch (current) {
     case 'Ancienne-Lorette':
@@ -35,7 +34,7 @@ function getVille(current, tout) {
       ville = getEntityNamed('Québec', tout);
     break;
     default:
-      console.log('VILLE INCONNUE:\n IL MANQUE PEUT-ÊTRE UNE EXCEPTION DANS /entities/etablissements.js' );
+      console.log('VILLE' + current +  'INCONNUE:\n IL MANQUE PEUT-ÊTRE UNE EXCEPTION DANS /entities/etablissements.js' );
     }
   }
 
@@ -86,23 +85,18 @@ module.exports = {
                   type: et._id,
                   address: {
                     street: etab.street,
-                    commissionScolaire: cs ? cs._id : null,
+                    commissionScolaire: cs ? cs._id : undefined,
                     city: v._id,
                     province: p._id,
                     postalCode: etab.postalCode,
                   },
-                  telephone: phn ? phn[0].number : null,
+                  telephone: phn ? phn : undefined,
                   coordinates: {
                     lat: etab.lat,
                     long: etab.lon,
                   },
-                  osmId: null,
-                  osmType: null,
-                  placeId: null,
-                  placeType: null,
                   notes: {
                     admin: etab.notes,
-                    public: null
                   }
                 }
               });
