@@ -5,63 +5,58 @@ var dataReader = require('../lib/data-reader'),
   getter = require('../lib/getter'),
   _ = require('lodash');
 
-function getEtabs(currents, toutOld, toutNew) {
-  var etabs = _.map(currents, (function (current) {
-    // Cherche les établissements courant par nom dans toutNew
-    var results = _.filter(toutNew, ['name', current.name]);
-    if (results.length === 1) {
-      return results[0];
-    } else if (results.length > 0) {
-      // Yé plus d'un établissement possède ce nom !
-      return results[0];
-    } else {
-      console.log("L'établissement :" + current + " manque à l'appel dans la nouvelle base de données !");
-      return [];
-    }
+function getEtabIDs(partialObjList, objWithIDList, warn) {
+  var idList = _.map(partialObjList, (function (partialObj) {
+    var objWithID = _.find(objWithIDList, partialObj);
+
+    if (objWithID) { return objWithID._id; }
+
+    if (warn) { console.log("Aucun id trouvé pour : ", partialObj); }
+    return undefined
   }));
-  return etabs;
+  return idList;
 }
 
-function getPoste(current, tout) {
-  return _.find(tout, ['description', current]);
+function getPosteID(posteName, postes, warn) {
+  var posteObj = _.find(postes, { description: posteName });
+
+  if (posteObj) { return posteObj._id; }
+
+  if (warn) { console.log("Aucun id trouvé pour : ", posteName); }
+  return undefined;
 }
+
+
 module.exports = {
   export: function (cb) {
     dataReader.get('contacts', function (err, contacts) {
-      if (err) {
-        return cb(err);
-      }
-      // Récupère les établissements dans './data/etablissements'
-      // Les contacts contiennent une liste de numéros d'établissements
-      // qui proviennent de la DB mysql.
-      dataReader.get('etablissements', function (err, oldEtabs) {
-        if (err) {
-          return cb(err);
-        }
-        // Récupère les établissements de la nouvelle base de donnée
-        getter.get('etablissement', function (err, newEtabs) {
-          if (err) {
-            return cb(err);
-          }
-          getter.get('poste', function (err, postes) {
+      if (err) { return cb(err); }
+
+      getter.get('etablissement', function (err, etablissements) {
+        if (err) { return cb(err); }
+
+        getter.get('poste', function (err, postes) {
+          if (err) { return cb(err); }
+
+          getter.get('adresse/telephone', function (err, telephones) {
             if (err) {
               return cb(err);
             }
 
             contacts = _.map(contacts, function (contact) {
-              // Récupère de la nouvelle base de donnée les établissements
-              // associés au contact
-              var etabsContact = getEtabs(contact.etablissements, oldEtabs, newEtabs);
-              // Récupère de la nouvelle base de donnée le poste
-              // occupé par le contact
-              var poste = getPoste(contact.poste, postes);
-              return {
-                firstname: contact.firstname,
-                lastname: contact.lastname,
-                poste: poste,
-                email: contact.courriel,
-                etablissements: etabsContact
-              };
+
+              contact.etablissements =
+                getEtabIDs(contact.etablissements, etablissements);
+
+              contact.poste = getPosteID(contact.poste, postes);
+
+              contact.telephones = _.map(contact.telephones, function (tel) {
+                var result = _.find(telephones, tel);
+                if (result) { return result._id; }
+                else { return undefined; }
+              });
+
+              return contact;
             });
 
             exporter.send(apiRoute, contacts, cb);

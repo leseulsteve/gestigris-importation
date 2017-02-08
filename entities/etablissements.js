@@ -6,49 +6,27 @@ var dataReader = require('../lib/data-reader'),
   _ = require('lodash'),
   apiRoute = 'api/v1/etablissement';
 
-function getVille(current, tout) {
-  var ville = getEntityNamed(current, tout);
-  if (!ville) {
-    switch (current) {
-    case 'Ancienne-Lorette':
-      ville = getEntityNamed("L'Ancienne-Lorette", tout);
-      break;
-    case 'St-Augustin':
-      ville = getEntityNamed('Saint-Augustin-de-Desmaures', tout);
-      break;
-    case 'St-Marc-des-Carrières':
-      ville = getEntityNamed('Saint-Marc-des-Carrières', tout);
-      break;
-    case 'Chicoutimi':
-      ville = getEntityNamed('Saguenay', tout);
-      break;
-    case 'St-Gabriel-de-Valcartier ':
-      ville = getEntityNamed('Saint-Gabriel-de-Valcartier', tout);
-      break;
-    case 'Sainte-Catherine de la Jacques-Cartier':
-    case 'Sainte-Catherine-de-la-Jacques-Cartier ':
-      ville = getEntityNamed('Sainte-Catherine-de-la-Jacques-Cartier', tout);
-      break;
-    case 'Val-Bélair':
-    case 'Québec (Sainte-Foy-Sillery-Cap-Rouge)':
-      ville = getEntityNamed('Québec', tout);
-    break;
-    default:
-      console.log('VILLE' + current +  'INCONNUE:\n IL MANQUE PEUT-ÊTRE UNE EXCEPTION DANS /entities/etablissements.js' );
-    }
+function getIDForName(nom, entities) {
+  var result = _.find(entities, ['name', nom]);
+  if (result) { return result._id; }
+  else { return undefined; }
+}
+
+function getVilleID(nom, villes) {
+  var id = getIDForName(nom, villes);
+  if (!id) {
+    console.log("Cette ville: " + nom + " ne figure pas dans la liste !");
+    return undefined;
   }
 
-  return ville;
+  return id;
 }
 
-function getEntityNamed(current, tout) {
-  return _.find(tout, ['name', current]);
-}
 
 module.exports = {
 
   export: function (cb) {
-    dataReader.get('etablissements', function (err, results) {
+    dataReader.get('etablissements', function (err, etablissements) {
       if (err) {
         return cb(err);
       }
@@ -58,7 +36,7 @@ module.exports = {
           return cb(err);
         }
 
-        getter.get('adresse/province', function (err, province) {
+        getter.get('adresse/province', function (err, provinces) {
           if (err) {
             return cb(err);
           }
@@ -73,35 +51,31 @@ module.exports = {
                 return cb(err);
               }
 
-              results = _.map(results, function (etab) {
-                var v = getVille(etab.city, villes);
-                var p = getEntityNamed('Québec', province);
-                var cs = getEntityNamed(etab.commissionScolaire, commissions);
-                var et = getEntityNamed(etab.etablissementType, types);
-                var phn = etab.phoneNumbers;
-
-                return {
-                  name: etab.name,
-                  type: et._id,
-                  address: {
-                    street: etab.street,
-                    commissionScolaire: cs ? cs._id : undefined,
-                    city: v._id,
-                    province: p._id,
-                    postalCode: etab.postalCode,
-                  },
-                  telephone: phn ? phn : undefined,
-                  coordinates: {
-                    lat: etab.lat,
-                    long: etab.lon,
-                  },
-                  notes: {
-                    admin: etab.notes,
-                  }
+              getter.get('adresse/telephone', function (err, telephones) {
+                if (err) {
+                  return cb(err);
                 }
-              });
 
-              exporter.send(apiRoute, results, cb);
+                etablissements = _.map(etablissements, function (etab) {
+                  if (etab.address) {
+                    etab.address.city = getVilleID(etab.address.city, villes);
+                    etab.address.province = getIDForName(etab.address.province, provinces);
+                  }
+
+                  etab.commissionScolaire = getIDForName(etab.commissionScolaire, commissions);
+
+                  etab.type = getIDForName(etab.type, types);
+
+                  etab.telephones = _.map(etab.telephones, function (tel) {
+                    var result = _.find(telephones, tel);
+                    if (result) { return result._id; }
+                    else { return undefined; }
+                  });
+                  return etab;
+                });
+
+                exporter.send(apiRoute, etablissements, cb);
+              });
             });
           });
         });

@@ -5,6 +5,6 @@ var exporter = require('../lib/exporter'),
 
 module.exports = {
   export: function (cb) {
-      exporter.send(apiRoute, [{name: 'Québec'}], cb);
+      exporter.send(apiRoute, [{name: 'Québec', id: 'ugh'}], cb);
     }
   };
