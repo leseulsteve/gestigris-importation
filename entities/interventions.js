@@ -18,6 +18,7 @@ module.exports = {
         return cb(err);
       }
 
+      interventions = _.flatten(interventions);
       // getter.get('intervention-types', function (err, types) {
       //   if (err) {
       //     return cb(err);

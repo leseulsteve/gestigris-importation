@@ -39,9 +39,7 @@ module.exports = {
           if (err) { return cb(err); }
 
           getter.get('adresse/telephone', function (err, telephones) {
-            if (err) {
-              return cb(err);
-            }
+            if (err) { return cb(err); }
 
             contacts = _.map(contacts, function (contact) {
 
@@ -52,8 +50,7 @@ module.exports = {
 
               contact.telephones = _.map(contact.telephones, function (tel) {
                 var result = _.find(telephones, tel);
-                if (result) { return result._id; }
-                else { return undefined; }
+                if (result) { return result._id; } else { return undefined; }
               });
 
               return contact;
@@ -65,4 +62,5 @@ module.exports = {
       });
     });
   }
+
 };
