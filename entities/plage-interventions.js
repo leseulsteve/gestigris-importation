@@ -19,12 +19,13 @@ module.exports = {
           if (err) { return cb(err); }
 
           plages = _.map(_.flatten(plages), function (plage) {
-            var etablissement = _.find(etablissements, plage.etablissement)
+            var etablissement = _.find(etablissements, plage.etablissement);
             plage.etablissement = etablissement._id;
 
             plage.tags = _.map(plage.tags, function (tagName) {
               var tag = _.find(tags, ['name', tagName]);
               return tag._id;
+              return tag;
             });
 
             return plage;
