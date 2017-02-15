@@ -1,77 +1,73 @@
 'use strict';
 
-var dataReader = require('../lib/data-reader'),
-  exporter = require('../lib/exporter'),
-  getter = require('../lib/getter'),
-  _ = require('lodash'),
-  apiRoute = 'api/v1/etablissement';
-
-function getIDForName(nom, entities) {
-  var result = _.find(entities, ['name', nom]);
-  if (result) { return result._id; }
-  else { return undefined; }
-}
-
-function getVilleID(nom, villes) {
-  var id = getIDForName(nom, villes);
-  if (!id) {
-    console.log("Cette ville: " + nom + " ne figure pas dans la liste !");
-    return undefined;
-  }
-
-  return id;
-}
-
+const dataReader = require('../lib/data-reader');
+const exporter = require('../lib/exporter');
+const getter = require('../lib/getter');
+const _ = require('lodash');
+const apiRoute = 'api/v1/etablissement';
 
 module.exports = {
 
-  export: function (cb) {
-    dataReader.get('etablissements', function (err, etablissements) {
-      if (err) {
-        return cb(err);
-      }
+  export: function(cb) {
+    dataReader.get('etablissements', function(err, etablissements) {
+      if (err) { return cb(err); }
 
-      getter.get('adresse/ville', function (err, villes) {
-        if (err) {
-          return cb(err);
-        }
+      getter.get('adresse/ville', function(err, villes) {
+        if (err) { return cb(err); }
 
-        getter.get('adresse/province', function (err, provinces) {
-          if (err) {
-            return cb(err);
-          }
+        getter.get('adresse/province', function(err, provinces) {
+          if (err) { return cb(err); }
 
-          getter.get('commission-scolaire', function (err, commissions) {
-            if (err) {
-              return cb(err);
-            }
+          getter.get('commission-scolaire', function(err, commissions) {
+            if (err) { return cb(err); }
 
-            getter.get('etablissement-type', function (err, types) {
-              if (err) {
-                return cb(err);
-              }
+            getter.get('etablissement-type', function(err, types) {
+              if (err) { return cb(err); }
 
-              getter.get('adresse/telephone', function (err, telephones) {
-                if (err) {
-                  return cb(err);
-                }
+              getter.get('adresse/telephone', function(err, telephones) {
+                if (err) { return cb(err); }
 
-                etablissements = _.map(etablissements, function (etab) {
-                  if (etab.address) {
-                    etab.address.city = getVilleID(etab.address.city, villes);
-                    etab.address.province = getIDForName(etab.address.province, provinces);
+                etablissements = _.map(_.flatten(etablissements), function(etablissement) {
+
+                  var adresse = etablissement.address;
+
+                  var city = _.find(villes, adresse.city);
+                  if (!city) {
+                    console.error('Ville manquante ou erronée : ' + adresse.city);
+                  }
+                  adresse.city = city;
+
+                  var province = _.find(provinces, adresse.province);
+                  if (!province) {
+                    console.error('Province manquante : ' + adresse.province);
+                  }
+                  adresse.province = province;
+
+                  if (etablissement.commissionScolaire) {
+                    var commission = _.find(commissions, etablissement.commissionScolaire);
+                    if (!commission) {
+                      console.error('Commission scolaire manquante : ' + etablissement.commissionScolaire);
+                    }
+                    etablissement.commissionScolaire = commission;
                   }
 
-                  etab.commissionScolaire = getIDForName(etab.commissionScolaire, commissions);
+                  var type = _.find(types, etablissement.type);
+                  if (!type) {
+                    console.error('Type manquant : ' + etablissement.type);
+                  }
+                  etablissement.type = type;
 
-                  etab.type = getIDForName(etab.type, types);
-
-                  etab.telephones = _.map(etab.telephones, function (tel) {
+                  etablissement.telephones = _.map(etablissement.telephones, function(tel) {
                     var result = _.find(telephones, tel);
-                    if (result) { return result._id; }
-                    else { return undefined; }
+                    if (!result) {
+                      console.error('Téléphone manquant : ' + JSON.stringify(tel));
+                      return undefined;
+                    }
+
+                    return result._id;
                   });
-                  return etab;
+
+                  return etablissement;
                 });
 
                 exporter.send(apiRoute, etablissements, cb);

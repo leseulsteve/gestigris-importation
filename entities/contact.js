@@ -1,56 +1,54 @@
 'use strict';
-var dataReader = require('../lib/data-reader'),
-  exporter = require('../lib/exporter'),
-  apiRoute = 'api/v1/contact',
-  getter = require('../lib/getter'),
-  _ = require('lodash');
 
-function getEtabIDs(partialObjList, objWithIDList, warn) {
-  var idList = _.map(partialObjList, (function (partialObj) {
-    var objWithID = _.find(objWithIDList, partialObj);
-
-    if (objWithID) { return objWithID._id; }
-
-    if (warn) { console.log("Aucun id trouvé pour : ", partialObj); }
-    return undefined
-  }));
-  return idList;
-}
-
-function getPosteID(posteName, postes, warn) {
-  var posteObj = _.find(postes, { description: posteName });
-
-  if (posteObj) { return posteObj._id; }
-
-  if (warn) { console.log("Aucun id trouvé pour : ", posteName); }
-  return undefined;
-}
-
+const dataReader = require('../lib/data-reader');
+const exporter = require('../lib/exporter');
+const apiRoute = 'api/v1/contact';
+const getter = require('../lib/getter');
+const _ = require('lodash');
 
 module.exports = {
-  export: function (cb) {
-    dataReader.get('contacts', function (err, contacts) {
+  export: function(cb) {
+    dataReader.get('contacts', function(err, contacts) {
       if (err) { return cb(err); }
 
-      getter.get('etablissement', function (err, etablissements) {
+      getter.get('etablissement', function(err, etablissements) {
         if (err) { return cb(err); }
 
-        getter.get('poste', function (err, postes) {
+        getter.get('poste', function(err, postes) {
           if (err) { return cb(err); }
 
-          getter.get('adresse/telephone', function (err, telephones) {
+          getter.get('adresse/telephone', function(err, telephones) {
             if (err) { return cb(err); }
 
-            contacts = _.map(contacts, function (contact) {
+            contacts = _.map(_.flatten(contacts), function(contact) {
+              if (contact.poste) {
+                var poste = _.find(postes, contact.poste);
+                if (!poste) {
+                  console.log('Poste introuvable : ' + JSON.stringify(contact.poste));
+                  return null;
+                }
+                contact.poste = poste._id;
+              }
 
-              contact.etablissements =
-                getEtabIDs(contact.etablissements, etablissements);
+              contact.etablissements = _.map(contact.etablissements, function(etab) {
+                var etablissement = _.find(etablissements, etab);
+                if (!etablissement) {
+                  console.log('Établissement introuvable : ' + JSON.stringify(etab));
+                  return null;
+                }
 
-              contact.poste = getPosteID(contact.poste, postes);
+                return etablissement._id;
+              });
 
-              contact.telephones = _.map(contact.telephones, function (tel) {
-                var result = _.find(telephones, tel);
-                if (result) { return result._id; } else { return undefined; }
+
+              contact.telephones = _.map(contact.telephones, function(tel) {
+                var telephone = _.find(telephones, tel);
+                if (!telephone) {
+                  console.log('Téléphone introuvable : ' + JSON.stringify(tel));
+                  return null;
+                }
+
+                return telephone._id;
               });
 
               return contact;

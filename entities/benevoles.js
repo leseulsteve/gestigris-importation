@@ -1,43 +1,38 @@
 'use strict';
 
-var dataReader = require('../lib/data-reader'),
-  getter = require('../lib/getter'),
-  exporter = require('../lib/exporter'),
-  apiRoute = 'api/v1/benevole',
-  _ = require('lodash');
-
-function getRoleID(code, roles, warn) {
-  var role = _.find(roles, ['code', code]);
-
-  if (role) {
-    return role._id;
-  } else if (warn) {
-    console.log('Code inconnu : ' + code);
-  }
-
-  return undefined;
-}
+const data = require('../lib/data-reader');
+const db = require('../lib/getter');
+const exporter = require('../lib/exporter');
+const apiRoute = 'api/v1/benevole';
+const _ = require('lodash');
 
 module.exports = {
 
-  export: function (cb) {
-    dataReader.get('users', function (err, benevoles) {
+  export: function(cb) {
+    data.get('benevoles', function(err, benevoles) {
       if (err) { return cb(err); }
 
-      getter.get('benevole-role', function (err, roles) {
+      db.get('benevole-role', function(err, roles) {
         if (err) { return cb(err); }
 
-        getter.get('adresse/telephone', function (err, telephones) {
+        db.get('adresse/telephone', function(err, telephones) {
           if (err) { return cb(err); }
 
-          benevoles = _.map(benevoles, function (benevole) {
+          benevoles = _.map(_.flatten(benevoles), function(benevole) {
 
-            benevole.role = getRoleID(benevole.role, roles, true);
+            var role = _.find(roles, benevole.role);
+            if (!role) {
+              console.error('Code de rôle erroné : ' + benevole.role);
+            }
+            benevole.role = role._id;
 
-            benevole.telephones = _.map(benevole.telephones, function (tel) {
-              var result = _.find(telephones, tel);
-              if (result) { return result._id; }
-              else { return undefined; }
+            benevole.telephones = _.map(benevole.telephones, function(telephone) {
+              var result = _.find(telephones, telephone);
+              if (!result) {
+                console.error('Téléphone manquant : ' + JSON.stringify(telephone));
+                return undefined;
+              }
+              return result._id;
             });
 
             return benevole;
@@ -48,4 +43,5 @@ module.exports = {
       });
     });
   }
+
 };
