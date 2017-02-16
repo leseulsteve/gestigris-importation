@@ -1,18 +1,17 @@
 'use strict';
 
-var dataReader = require('../lib/data-reader'),
-  exporter = require('../lib/exporter'),
-  apiRoute = 'api/v1/adresse/telephone',
-  _ = require('lodash');
+const dataReader = require('../lib/data-reader');
+const exporter = require('../lib/exporter');
+const apiRoute = 'api/v1/adresse/telephone';
+const _ = require('lodash');
 
-  module.exports = {
-    export: function (cb) {
-        dataReader.get('telephones', function(err, telephones) {
-          if (err) {
-            cb(err);
-          }
+module.exports = {
 
-          exporter.send(apiRoute, _.flatten(telephones), cb);
-        });
-    }
-  };
+  export: function(cb) {
+    dataReader.get('telephones', function(err, telephones) {
+      if (err) { return cb(err); }
+      exporter.send(apiRoute, _.flatten(telephones), cb);
+    });
+  }
+
+};

@@ -1,23 +1,23 @@
 'use strict';
 
-var exporter = require('../lib/exporter');
-var apiRoute = 'api/v1/benevole-role';
+const exporter = require('../lib/exporter');
+const apiRoute = 'api/v1/benevole-role';
 
 module.exports = {
-  export: function (cb) {
-      var roles = [
-        {
-          description: 'Observateur',
-          code: 0
+  export: function(cb) {
+    var roles = [
+      {
+        description: 'Observateur',
+        code: 0
         },
-        {
-          description: 'Intervenant',
-          code: 1
+      {
+        description: 'Intervenant',
+        code: 1
         },
-        {
-          description: 'Expérimenté',
-          code: 2
+      {
+        description: 'Expérimenté',
+        code: 2
         }];
-      exporter.send(apiRoute, roles, cb);
-    }
-  };
+    exporter.send(apiRoute, roles, cb);
+  }
+};

@@ -1,10 +1,10 @@
 'use strict';
 
-var dataReader = require('../lib/data-reader'),
-  getter = require('../lib/getter'),
-  exporter = require('../lib/exporter'),
-  apiRoute = 'api/v1/plage-intervention',
-  _ = require('lodash');
+const dataReader = require('../lib/data-reader');
+const getter = require('../lib/getter');
+const exporter = require('../lib/exporter');
+const apiRoute = 'api/v1/plage-intervention';
+const _ = require('lodash');
 
 module.exports = {
 

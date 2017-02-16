@@ -1,10 +1,10 @@
 'use strict';
 
-var dataReader = require('../lib/data-reader');
-var getter = require('../lib/getter');
-var exporter = require('../lib/exporter');
+const dataReader = require('../lib/data-reader');
+const getter = require('../lib/getter');
+const exporter = require('../lib/exporter');
 const apiRoute = 'api/v1/intervention';
-var _ = require('lodash');
+const _ = require('lodash');
 
 module.exports = {
 
@@ -30,6 +30,7 @@ module.exports = {
                 var now = Date.now();
 
                 interventions = _.map(_.flatten(interventions), function(intervention) {
+
                   var plage = _.find(plages, intervention.plage);
                   if (!plage) {
                     console.log("Plage not found! ");

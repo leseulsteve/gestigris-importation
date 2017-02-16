@@ -30,7 +30,6 @@ module.exports = {
                 etablissements = _.map(_.flatten(etablissements), function(etablissement) {
 
                   var adresse = etablissement.address;
-
                   var city = _.find(villes, adresse.city);
                   if (!city) {
                     console.error('Ville manquante ou erronée : ' + adresse.city);
