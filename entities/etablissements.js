@@ -6,6 +6,7 @@ const getter = require('../lib/getter');
 const _ = require('lodash');
 const apiRoute = 'api/v1/etablissement';
 
+
 module.exports = {
 
   export: function(cb) {
