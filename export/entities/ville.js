@@ -1,6 +1,6 @@
 'use strict';
 
-const villes = require('../data/ville.json');
+const villes = require('../ville.json');
 const exporter = require('../lib/exporter');
 const apiRoute = 'api/v1/adresse/ville';
 

@@ -2,11 +2,11 @@
 
 var fs = require('fs'),
   path = require('path'),
-  repertoires = require('../data/repertoires.json');
+  repertoires = require('../../data/repertoires.json');
 
 module.exports = {
 
-  get: function (collectionName, cb) {
+  get: function(collectionName, cb) {
 
     var collection = [],
       repertoire = repertoires[collectionName];
@@ -17,13 +17,13 @@ module.exports = {
 
     var collectionPath = path.join('.', repertoires[collectionName]);
 
-    fs.readdir(collectionPath, function (err, fileNames) {
+    fs.readdir(collectionPath, function(err, fileNames) {
       if (err) {
         return cb(err);
       }
-      fileNames.forEach(function (fileName, index) {
+      fileNames.forEach(function(fileName, index) {
         if (!/^\./.test(fileName)) {
-          collection.push(require(path.join('../', collectionPath, fileName)));
+          collection.push(require(path.join('../../', collectionPath, fileName)));
         }
       });
 

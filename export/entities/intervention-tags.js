@@ -7,11 +7,8 @@ const _ = require('lodash');
 
 module.exports = {
 
-  export: function(cb) {
-    dataReader.get('interventionTypes', function(err, results) {
-      if (err) { return cb(err); }
-      exporter.send(apiRoute, _.flatten(results), cb);
-    });
+  export: function(tags, cb) {
+    exporter.send(apiRoute, tags, cb);
   }
 
 };

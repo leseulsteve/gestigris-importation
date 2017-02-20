@@ -7,11 +7,8 @@ const _ = require('lodash');
 
 module.exports = {
 
-  export: function(cb) {
-    dataReader.get('telephones', function(err, telephones) {
-      if (err) { return cb(err); }
-      exporter.send(apiRoute, _.flatten(telephones), cb);
-    });
+  export: function(telephones, cb) {
+    exporter.send(apiRoute, telephones, cb);
   }
 
 };

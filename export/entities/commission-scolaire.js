@@ -7,11 +7,8 @@ const _ = require('lodash');
 
 module.exports = {
 
-  export: function(cb) {
-    dataReader.get('commissionsScolaires', function(err, results) {
-      if (err) { return cb(err); }
-      exporter.send(apiRoute, _.flatten(results), cb);
-    });
+  export: function(cs, cb) {
+    exporter.send(apiRoute, cs, cb);
   }
 
 };
