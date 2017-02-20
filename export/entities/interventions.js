@@ -78,9 +78,6 @@ module.exports = {
                   return benevole._id;
                 });
 
-                // TODO: Réviser le modèle puis supprimer cette ligne
-                delete intervention.responsableGroupe;
-
                 return intervention;
               });
 

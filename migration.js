@@ -29,11 +29,12 @@ module.exports = {
 
           exportation.postes.export(types.postes, function(err) {
             if (err) { return cb(err); }
-            return cb(null);
+
 
             exportation.tags.export(types.tags, function(err) {
               if (err) { return console.error(err); }
-              console.log(success + 'Tags des interventions');
+
+              return cb(null);
             });
           });
         });
@@ -89,11 +90,15 @@ module.exports = {
           if (err) { return cb(err); }
 
           importation.interventions.import(etablissements, contacts, benevoles, function(err, aggregat) {
-            if (err) { return console.error(err); }
+            if (err) { return cb(err); }
 
-            exportation.interventions.export(aggregat.interventions, function(err) {
-              if (err) { return console.error(err); }
-              cb(null);
+            exportation.plages.export(aggregat.plages, function(err) {
+              if (err) { return cb(err); }
+
+              exportation.interventions.export(aggregat.interventions, function(err) {
+                if (err) { return console.error(err); }
+                cb(null);
+              });
             });
           });
         });

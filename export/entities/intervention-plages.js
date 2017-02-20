@@ -13,22 +13,29 @@ module.exports = {
     getter.get('etablissement', function(err, etablissements) {
       if (err) { return cb(err); }
 
-      getter.get('intervention-tag', function(err, tags) {
+      getter.get('contact', function(err, contacts) {
         if (err) { return cb(err); }
 
-        plages = _.map(plages, function(plage) {
-          var etablissement = _.find(etablissements, plage.etablissement);
-          plage.etablissement = etablissement._id;
+        getter.get('intervention-tag', function(err, tags) {
+          if (err) { return cb(err); }
 
-          plage.tags = _.map(plage.tags, function(tagName) {
-            var tag = _.find(tags, ['name', tagName]);
-            return tag._id;
+          plages = _.map(plages, function(plage) {
+            var etablissement = _.find(etablissements, plage.etablissement);
+            plage.etablissement = etablissement._id;
+
+            var contact = _.find(contacts, plage.contact);
+            plage.contact = contact;
+
+            plage.tags = _.map(plage.tags, function(tagName) {
+              var tag = _.find(tags, ['name', tagName]);
+              return tag._id;
+            });
+
+            return plage;
           });
 
-          return plage;
+          exporter.send(apiRoute, plages, cb);
         });
-
-        exporter.send(apiRoute, plages, cb);
       });
     });
   }

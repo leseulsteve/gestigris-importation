@@ -1,13 +1,13 @@
 SELECT
   n.nid AS id,
   DATE(d.field_date_value) AS date ,
-  TIME_FORMAT(d.field_date_value, '%H:%i') AS startTime,
-  TIME_FORMAT(d.field_date_value2, '%H:%i') AS endTime,
+  d.field_date_value AS startTime,
+  d.field_date_value2 AS endTime,
   etab.field_etablissement_target_id AS etablissement_id,
   c.field_contact_target_id AS contact_id,
   ldr.field_lieu_de_rencontre_value AS lieuRencontre,
   rg.field_responsable_du_groupe_value AS responsableGroupe,
-  loc.field_local_value AS LOCAL,
+  loc.field_local_value AS local,
   ntadmin.field_notes_admin_value AS notesAdmin,
   ntpub.field_notes_public_value AS notesPublic
 
@@ -35,3 +35,5 @@ WHERE
 
 ORDER BY
   etablissement_id, DATE
+
+-- TIME_FORMAT(d.field_date_value, '%H:%i')

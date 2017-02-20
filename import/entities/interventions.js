@@ -149,6 +149,7 @@ module.exports = {
 function Plage(intervention) {
   this.date = intervention.date;
   this.etablissement = intervention.etablissement;
+  this.contact = intervention.contact;
   this.tags = Array.isArray(intervention.tags) ? intervention.tags.slice() : [];
 }
 

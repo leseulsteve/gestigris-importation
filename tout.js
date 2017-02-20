@@ -34,71 +34,72 @@ exportation.villes.export(function(err) {
               if (err) { return console.error(err); }
               console.log(success + 'Postes des contacts');
 
-              // exportation.tags.export(types.tags, function(err) {
-              //   if (err) { return console.error(err); }
-              //   console.log(success + 'Tags des interventions');
-
-
-              // Téléphones
-              // importation.telephones.import(function(err, telephones) {
-              //   if (err) { return console.error(err); }
-              //
-              //   exportation.telephones.export(telephones, function(err) {
-              //     if (err) { return console.error(err); }
-              //     console.log(success + 'Téléphones');
-
-
-              // Établissements
-              importation.etablissements.import(function(err, etablissements) {
+              exportation.tags.export(types.tags, function(err) {
                 if (err) { return console.error(err); }
+                console.log(success + 'Tags des interventions');
 
 
-                exportation.etablissements.export(etablissements, function(err) {
+                // Téléphones
+                // importation.telephones.import(function(err, telephones) {
+                //   if (err) { return console.error(err); }
+                //
+                //   exportation.telephones.export(telephones, function(err) {
+                //     if (err) { return console.error(err); }
+                //     console.log(success + 'Téléphones');
+
+
+                // Établissements
+                importation.etablissements.import(function(err, etablissements) {
                   if (err) { return console.error(err); }
-                  console.log(success + 'Établissements');
 
 
-                  // Contacts
-                  importation.contacts.import(etablissements, function(err, contacts) {
+                  exportation.etablissements.export(etablissements, function(err) {
                     if (err) { return console.error(err); }
+                    console.log(success + 'Établissements');
 
-                    exportation.contacts.export(contacts, function(err) {
+
+                    // Contacts
+                    importation.contacts.import(etablissements, function(err, contacts) {
                       if (err) { return console.error(err); }
-                      console.log(success + 'Contacts');
 
-
-                      // Bénévoles
-                      importation.benevoles.import(function(err, benevoles) {
+                      exportation.contacts.export(contacts, function(err) {
                         if (err) { return console.error(err); }
+                        console.log(success + 'Contacts');
 
-                        exportation.benevoles.export(benevoles, function(err) {
+
+                        // Bénévoles
+                        importation.benevoles.import(function(err, benevoles) {
                           if (err) { return console.error(err); }
-                          console.log(success + 'Bénévoles');
+
+                          exportation.benevoles.export(benevoles, function(err) {
+                            if (err) { return console.error(err); }
+                            console.log(success + 'Bénévoles');
 
 
-                          // Interventions & plages
-                          // importation.interventions.import(etablissements, contacts, benevoles, function(err, aggregat) {
-                          //   if (err) { return console.error(err); }
-                          //
-                          //   exportation.plages.export(aggregat.plages, function(err) {
-                          //     if (err) { return console.error(err); }
-                          //     console.log(success + "Plages d'intervention");
-                          //
-                          //     exportation.interventions.export(aggregat.interventions, function(err) {
-                          //       if (err) { return console.error(err); }
-                          //       console.log(success + 'Interventions');
-                          //     });
-                          //   });
-                          // });
+                            // Interventions & plages
+                            importation.interventions.import(etablissements, contacts, benevoles, function(err, aggregat) {
+                              if (err) { return console.error(err); }
+
+                              exportation.plages.export(aggregat.plages, function(err) {
+                                if (err) { return console.error(err); }
+                                console.log(success + "Plages d'intervention");
+
+                                exportation.interventions.export(aggregat.interventions, function(err) {
+                                  if (err) { return console.error(err); }
+                                  console.log(success + 'Interventions');
+                                });
+                              });
+                            });
+                          });
                         });
                       });
                     });
                   });
                 });
+                // });
+                // }); Téléphones
+                // });
               });
-              // });
-              // }); Téléphones
-              // });
             });
           });
         });
