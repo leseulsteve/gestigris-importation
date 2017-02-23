@@ -4,7 +4,7 @@ SELECT
     TRIM(fn.field_prenom_value) AS prenom,
     TRIM(ln.field_nom_value) AS nomFamille,
     TRIM(usr.mail) AS email,
-    usr.init AS init,
+    usr.status AS actif,
     sexe.field_sexe_value AS sexe,
     orsex.field_orientation_sexuelle_value AS orientation,
     FORMAT(taxo.weight, 0) AS role,
